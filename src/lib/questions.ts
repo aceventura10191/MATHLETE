@@ -1,6 +1,11 @@
 export type Difficulty = 'Basic' | 'Intermediate' | 'Hard' | 'Advanced';
 export type AnimationType = 'geometric' | 'step-by-step';
 
+export interface CommonError {
+  matches: string[];
+  feedback: string;
+}
+
 export interface Question {
   id: string;
   topic: string;
@@ -11,6 +16,7 @@ export interface Question {
   animationType: AnimationType;
   steps?: string[]; // The steps for the GSAP Textual Solver
   historicalContext?: string; // Information to slide in before the proof
+  commonErrors?: CommonError[]; // Specific feedback for close answers
 }
 
 export type ClientQuestion = Omit<Question, 'accepts' | 'steps' | 'historicalContext'>;
@@ -214,7 +220,13 @@ export const questions: Question[] = [
       '\\textcolor{#ec4899}{3x^2} \\textcolor{#3b82f6}{\\ln(x)} + \\textcolor{#ec4899}{x^3} \\textcolor{#3b82f6}{\\left(\\frac{1}{x}\\right)}',
       'x^2 (\\textcolor{#ec4899}{3} \\textcolor{#3b82f6}{\\ln x} + 1)'
     ],
-    historicalContext: 'The Product Rule was discovered by Gottfried Wilhelm Leibniz, publishing the modern notation of calculus in 1684.'
+    historicalContext: 'The Product Rule was discovered by Gottfried Wilhelm Leibniz, publishing the modern notation of calculus in 1684.',
+    commonErrors: [
+      {
+        matches: ['3x^2ln(x)+x^3(1/x)', '3x^2lnx+x^3(1/x)', 'x^3(1/x)+3x^2ln(x)', '3x^2ln(x)+x^2'],
+        feedback: "You applied the product rule perfectly, but you didn't fully simplify and factorize your final answer."
+      }
+    ]
   },
   {
     id: 'hard-calculus-2',

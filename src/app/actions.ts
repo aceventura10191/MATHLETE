@@ -16,23 +16,34 @@ export async function getRandomClientQuestion(): Promise<ClientQuestion> {
   };
 }
 
-export async function validateAnswer(id: string, answer: string): Promise<{ correct: boolean, fullQuestion: Question | null }> {
+export async function validateAnswer(id: string, answer: string): Promise<{ correct: boolean, feedback?: string, fullQuestion: Question | null }> {
   const question = questions.find(q => q.id === id);
   
   if (!question) {
     return { correct: false, fullQuestion: null };
   }
 
-  // Check if answer matches any accepted answers
-  // We sanitize spaces and convert to lowercase for leniency
   const sanitizedAnswer = answer.toLowerCase().replace(/\s+/g, '');
   
   const isCorrect = question.accepts.some(accepted => 
     accepted.toLowerCase().replace(/\s+/g, '') === sanitizedAnswer
   );
 
-  return {
-    correct: isCorrect,
-    fullQuestion: question
-  };
+  if (isCorrect) {
+    return { correct: true, fullQuestion: question };
+  }
+
+  // Check for common errors
+  if (question.commonErrors) {
+    for (const error of question.commonErrors) {
+      const isCommonError = error.matches.some(match => 
+        match.toLowerCase().replace(/\s+/g, '') === sanitizedAnswer
+      );
+      if (isCommonError) {
+        return { correct: false, feedback: error.feedback, fullQuestion: question };
+      }
+    }
+  }
+
+  return { correct: false, fullQuestion: question };
 }

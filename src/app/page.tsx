@@ -13,6 +13,7 @@ export default function Home() {
   const [streak, setStreak] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<ClientQuestion | Question | null>(null);
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [replayCount, setReplayCount] = useState(0);
@@ -31,13 +32,14 @@ export default function Home() {
     if (!currentQuestion) return;
 
     // Securely validate the answer on the server
-    const { correct, fullQuestion } = await validateAnswer(currentQuestion.id, answer);
+    const { correct, feedback: serverFeedback, fullQuestion } = await validateAnswer(currentQuestion.id, answer);
 
     if (fullQuestion) {
       setCurrentQuestion(fullQuestion);
     }
 
     setWasCorrect(correct);
+    setFeedback(serverFeedback || null);
     if (correct) setStreak(prev => prev + 1);
     else setStreak(0);
     
@@ -54,6 +56,7 @@ export default function Home() {
   const handleNextQuestion = async () => {
     setGameState(GameStates.NOT_STARTED);
     setWasCorrect(null);
+    setFeedback(null);
     setIsLoading(true);
     const q = await getRandomClientQuestion();
     setTimeout(() => {
@@ -82,8 +85,14 @@ export default function Home() {
       {/* Banner for correct/incorrect feedback overlay */}
       <div className={`fixed top-4 md:top-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 transform ${gameState === GameStates.SHOWING_ANIMATION || gameState === GameStates.ANSWER_SUBMITTED ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-20 opacity-0 scale-90 pointer-events-none'}`}>
         {wasCorrect !== null && (
-          <div className={`px-8 py-4 rounded-full backdrop-blur-xl border font-bold tracking-widest uppercase text-sm shadow-[0_0_40px_rgba(0,0,0,0.5)] flex items-center gap-4 ${wasCorrect ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'bg-rose-500/20 border-rose-400/50 text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.3)]'}`}>
-            <span>{wasCorrect ? 'Correct! 🎯' : 'Incorrect. Solution below 👇'}</span>
+          <div className={`px-8 py-4 rounded-full backdrop-blur-xl border font-bold tracking-widest text-sm shadow-[0_0_40px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center gap-4 ${wasCorrect ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'bg-rose-500/20 border-rose-400/50 text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.3)]'}`}>
+            <span className="uppercase">{wasCorrect ? 'Correct!' : (feedback ? 'Close!' : 'Incorrect.')}</span>
+            {!wasCorrect && feedback && (
+              <span className="text-xs font-medium text-rose-200 normal-case max-w-sm text-center md:text-left border-t md:border-t-0 md:border-l border-rose-400/30 pt-2 md:pt-0 md:pl-4">{feedback}</span>
+            )}
+            {!wasCorrect && !feedback && (
+              <span className="text-xs font-medium text-rose-200 normal-case">Solution below.</span>
+            )}
             
             {/* Control Buttons (Replay / Next) */}
             {gameState === GameStates.SHOWING_ANIMATION && (
