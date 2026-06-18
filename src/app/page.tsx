@@ -5,23 +5,40 @@ import MathCanvas from '@/components/MathCanvas';
 import DailyQuestion from '@/components/DailyQuestion';
 import StreakCounter from '@/components/StreakCounter';
 import { GameState, GameStates } from '@/lib/gameState';
-import { Question, getRandomQuestion } from '@/lib/questions';
+import { Question, ClientQuestion } from '@/lib/questions';
+import { getRandomClientQuestion, validateAnswer } from '@/app/actions';
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState>(GameStates.NOT_STARTED);
   const [streak, setStreak] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<ClientQuestion | Question | null>(null);
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [replayCount, setReplayCount] = useState(0);
 
   useEffect(() => {
-    setCurrentQuestion(getRandomQuestion());
+    async function loadQuestion() {
+      setIsLoading(true);
+      const q = await getRandomClientQuestion();
+      setCurrentQuestion(q);
+      setIsLoading(false);
+    }
+    loadQuestion();
   }, []);
 
-  const handleAnswerSubmit = (isCorrect: boolean) => {
-    setWasCorrect(isCorrect);
-    if (isCorrect) setStreak(prev => prev + 1);
+  const handleAnswerSubmit = async (answer: string) => {
+    if (!currentQuestion) return;
+
+    // Securely validate the answer on the server
+    const { correct, fullQuestion } = await validateAnswer(currentQuestion.id, answer);
+
+    if (fullQuestion) {
+      setCurrentQuestion(fullQuestion);
+    }
+
+    setWasCorrect(correct);
+    if (correct) setStreak(prev => prev + 1);
     else setStreak(0);
     
     setGameState(GameStates.ANSWER_SUBMITTED);
@@ -34,11 +51,14 @@ export default function Home() {
     setReplayCount(prev => prev + 1);
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     setGameState(GameStates.NOT_STARTED);
     setWasCorrect(null);
+    setIsLoading(true);
+    const q = await getRandomClientQuestion();
     setTimeout(() => {
-      setCurrentQuestion(getRandomQuestion());
+      setCurrentQuestion(q);
+      setIsLoading(false);
     }, 300); // Wait for fade out
   };
 
@@ -95,7 +115,14 @@ export default function Home() {
             gameState === GameStates.SHOWING_ANIMATION || gameState === GameStates.ANSWER_SUBMITTED ? 'opacity-0 scale-90 pointer-events-none blur-md' : 'opacity-100 scale-100 blur-0'
           }`}
         >
-          <DailyQuestion question={currentQuestion} onSubmit={handleAnswerSubmit} />
+          {isLoading ? (
+            <div className="w-full max-w-xl mx-auto p-14 bg-neutral-950/80 backdrop-blur-3xl border border-neutral-800/80 rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center min-h-[400px]">
+               <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-4" />
+               <p className="text-neutral-500 font-mono text-sm tracking-widest uppercase animate-pulse">Initializing Secure Context...</p>
+            </div>
+          ) : (
+            <DailyQuestion question={currentQuestion} onSubmit={handleAnswerSubmit} />
+          )}
         </div>
 
         <div 
@@ -103,7 +130,7 @@ export default function Home() {
             gameState === GameStates.SHOWING_ANIMATION ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 pointer-events-none blur-md'
           }`}
         >
-          {gameState === GameStates.SHOWING_ANIMATION && currentQuestion && <MathCanvas key={replayCount} isVisible={true} question={currentQuestion} />}
+          {gameState === GameStates.SHOWING_ANIMATION && currentQuestion && <MathCanvas key={replayCount} isVisible={true} question={currentQuestion as Question} />}
         </div>
       </div>
     </main>

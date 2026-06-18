@@ -13,6 +13,8 @@ export interface Question {
   historicalContext?: string; // Information to slide in before the proof
 }
 
+export type ClientQuestion = Omit<Question, 'accepts' | 'steps' | 'historicalContext'>;
+
 export const questions: Question[] = [
   // BASIC (6 questions)
   {

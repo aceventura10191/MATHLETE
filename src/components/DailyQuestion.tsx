@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { Question } from '@/lib/questions';
+import { Question, ClientQuestion } from '@/lib/questions';
 
 interface DailyQuestionProps {
-  question: Question | null;
-  onSubmit: (isCorrect: boolean) => void;
+  question: ClientQuestion | Question | null;
+  onSubmit: (answer: string) => void;
 }
 
 export default function DailyQuestion({ question, onSubmit }: DailyQuestionProps) {
@@ -41,10 +41,7 @@ export default function DailyQuestion({ question, onSubmit }: DailyQuestionProps
     e.preventDefault();
     if (!answer.trim() || !question) return;
     
-    const formattedAnswer = answer.toLowerCase().replace(/\s/g, '');
-    const isCorrect = question.accepts.includes(formattedAnswer);
-    
-    onSubmit(isCorrect);
+    onSubmit(answer);
   };
 
   if (!question) return null;
