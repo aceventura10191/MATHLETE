@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MathCanvas from '@/components/MathCanvas';
 import DailyQuestion from '@/components/DailyQuestion';
 import StreakCounter from '@/components/StreakCounter';
+import BackgroundEquations from '@/components/BackgroundEquations';
 import { GameState, GameStates } from '@/lib/gameState';
 import { Question } from '@/lib/questions';
 import { ClientLesson } from '@/lib/lessons';
@@ -81,6 +82,9 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-start bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 to-black p-4 overflow-x-hidden relative pt-12 md:pt-20">
       {/* Deep background ambient glow */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none" />
+
+      {/* Floating math equations background */}
+      <BackgroundEquations />
 
       {/* Global Persistent Header */}
       <div className="relative z-20 text-center mb-12 flex flex-col items-center">
