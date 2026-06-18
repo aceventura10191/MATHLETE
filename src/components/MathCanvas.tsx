@@ -40,7 +40,12 @@ function GeometricMathCanvas({ isVisible, question }: MathCanvasProps) {
 
       const tl = gsap.timeline({ delay: 0.3 });
 
-      tl.to('.math-equation', { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out' });
+      // Context animation
+      if (question.historicalContext) {
+        tl.to('.historical-context', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
+      }
+
+      tl.to('.math-equation', { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out' }, question.historicalContext ? "+=0.2" : "");
       tl.to('.block-1', { scale: 1, duration: 1.4, ease: 'elastic.out(1, 0.4)' }, "+=0.4");
       tl.to('.block-2', { x: 0, y: 0, opacity: 1, duration: 1, ease: 'back.out(1.2)', stagger: 0.08 }, "+=0.3");
       tl.to('.block-3', { x: 0, y: 0, opacity: 1, duration: 1.2, ease: 'back.out(1.1)', stagger: 0.08 }, "+=0.3");
@@ -61,15 +66,25 @@ function GeometricMathCanvas({ isVisible, question }: MathCanvasProps) {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [isVisible]);
+  }, [isVisible, question]);
 
   if (!isVisible) return null;
 
   return (
     <div 
       ref={containerRef} 
-      className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center p-8 bg-neutral-950/90 rounded-[2.5rem] shadow-2xl overflow-hidden border border-neutral-800/50"
+      className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center p-8 bg-neutral-950/90 rounded-[2.5rem] shadow-2xl overflow-hidden border border-neutral-800/50 min-h-[500px]"
     >
+      {/* Historical Context Text */}
+      {question.historicalContext && (
+        <div className="historical-context w-full max-w-2xl text-center mb-6">
+          <p className="text-neutral-400 font-serif italic text-sm md:text-base leading-relaxed">
+            {question.historicalContext}
+          </p>
+          <div className="w-12 h-[1px] bg-neutral-800 mx-auto mt-4"></div>
+        </div>
+      )}
+
       <div className="math-equation flex items-center justify-center text-3xl sm:text-4xl lg:text-5xl font-serif text-white tracking-widest mb-16">
         <span 
           className="mr-4"

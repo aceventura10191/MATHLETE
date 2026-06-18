@@ -19,6 +19,7 @@ export default function TextualSolverCanvas({ isVisible, question }: TextualSolv
 
     const ctx = gsap.context(() => {
       // Initial states
+      gsap.set('.historical-context', { opacity: 0, y: -20 });
       gsap.set('.solver-step', { opacity: 1 }); // container stays visible
       
       // Target the direct children of KaTeX's .base element, ignoring .strut which is just for line height
@@ -28,7 +29,17 @@ export default function TextualSolverCanvas({ isVisible, question }: TextualSolv
       gsap.set('.final-answer', { opacity: 0, scale: 0.5, transformOrigin: 'center center' });
       gsap.set('.final-question-mark', { opacity: 1, scale: 1 });
 
-      const tl = gsap.timeline({ delay: 0.4 });
+      const tl = gsap.timeline({ delay: 0.2 });
+
+      // Animate historical context first if it exists
+      if (question.historicalContext) {
+        tl.to('.historical-context', {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out'
+        });
+      }
 
       // Animate line by line, but term by term inside each line
       const steps = gsap.utils.toArray('.solver-step');
@@ -42,7 +53,7 @@ export default function TextualSolverCanvas({ isVisible, question }: TextualSolv
             duration: 0.7,
             stagger: 0.12, 
             ease: 'back.out(1.5)'
-          }, index > 0 ? "+=0.3" : ""); // small pause between lines
+          }, index === 0 && question.historicalContext ? "+=0.2" : index > 0 ? "+=0.3" : ""); // small pause between lines
         }
       });
 
@@ -87,7 +98,18 @@ export default function TextualSolverCanvas({ isVisible, question }: TextualSolv
       {/* Background ambient glow effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-900/5 to-transparent pointer-events-none rounded-[2.5rem]" />
       
-      <div className="flex flex-col items-center justify-center gap-8 w-full z-10">
+      <div className="flex flex-col items-center justify-center gap-8 w-full z-10 relative">
+        
+        {/* Historical Context Text */}
+        {question.historicalContext && (
+          <div className="historical-context w-full max-w-2xl text-center mb-4">
+            <p className="text-neutral-400 font-serif italic text-sm md:text-base leading-relaxed">
+              {question.historicalContext}
+            </p>
+            <div className="w-12 h-[1px] bg-neutral-800 mx-auto mt-6"></div>
+          </div>
+        )}
+
         {intermediateSteps.map((step, idx) => (
           <div 
             key={idx} 

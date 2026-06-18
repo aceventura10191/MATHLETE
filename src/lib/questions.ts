@@ -10,6 +10,7 @@ export interface Question {
   accepts: string[];
   animationType: AnimationType;
   steps?: string[]; // The steps for the GSAP Textual Solver
+  historicalContext?: string; // Information to slide in before the proof
 }
 
 export const questions: Question[] = [
@@ -27,7 +28,8 @@ export const questions: Question[] = [
       '2x = 13 - 5',
       '2x = 8',
       'x = 4'
-    ]
+    ],
+    historicalContext: 'Formalized by Al-Khwarizmi in 820 AD to systematically solve inheritance and trade disputes.'
   },
   {
     id: 'basic-algebra-2',
@@ -42,7 +44,8 @@ export const questions: Question[] = [
       '3y = 14 + 7',
       '3y = 21',
       'y = 7'
-    ]
+    ],
+    historicalContext: 'The word "algebra" comes from "al-jabr" (restoration), referring to moving negative terms to the other side.'
   },
   {
     id: 'basic-arithmetic-1',
@@ -56,7 +59,8 @@ export const questions: Question[] = [
       '15 \\times 4 - 20',
       '60 - 20',
       '40'
-    ]
+    ],
+    historicalContext: 'The order of operations (PEMDAS) was established in the 1500s to create a universal mathematical grammar.'
   },
   {
     id: 'basic-arithmetic-2',
@@ -70,7 +74,8 @@ export const questions: Question[] = [
       '5^2 + 3^2',
       '25 + 9',
       '34'
-    ]
+    ],
+    historicalContext: 'Exponents were introduced by René Descartes in 1637 to simplify repeated multiplication.'
   },
   {
     id: 'basic-fractions-1',
@@ -84,7 +89,8 @@ export const questions: Question[] = [
       '\\frac{1}{2} + \\frac{1}{4}',
       '\\frac{2}{4} + \\frac{1}{4}',
       '\\frac{3}{4}'
-    ]
+    ],
+    historicalContext: 'Ancient Egyptians exclusively used unit fractions (like 1/n) for all their calculations, recorded on the Rhind Papyrus.'
   },
   {
     id: 'basic-percentages-1',
@@ -98,7 +104,8 @@ export const questions: Question[] = [
       '20\\% \\times 150',
       '0.2 \\times 150',
       '30'
-    ]
+    ],
+    historicalContext: 'The percent sign % evolved from the Italian term "per cento" (for every hundred) used by 15th-century merchants.'
   },
 
   // INTERMEDIATE (6 questions)
@@ -109,7 +116,8 @@ export const questions: Question[] = [
     equation: '1 + 3 + \\dots + (2n - 1) = ?',
     difficulty: 'Intermediate',
     accepts: ['n^2', 'n2', 'n*n'],
-    animationType: 'geometric', // Uses bespoke SVG
+    animationType: 'geometric', 
+    historicalContext: 'A classic "Proof Without Words." The ancient Greeks used pebbles arranged in L-shapes (gnomons) to visually prove this.'
   },
   {
     id: 'int-algebra-1',
@@ -123,7 +131,8 @@ export const questions: Question[] = [
       'x^2 - \\textcolor{#ec4899}{5x} + \\textcolor{#3b82f6}{6} = 0',
       '(x - \\textcolor{#ec4899}{2})(x - \\textcolor{#3b82f6}{3}) = 0',
       'x = \\textcolor{#10b981}{2} \\quad \\text{or} \\quad x = \\textcolor{#10b981}{3}'
-    ]
+    ],
+    historicalContext: 'Babylonians solved quadratics as early as 2000 BC using completing the square to determine land area.'
   },
   {
     id: 'int-trig-1',
@@ -137,7 +146,8 @@ export const questions: Question[] = [
       '\\textcolor{#8b5cf6}{\\sin}(30^\\circ)',
       '\\text{Using the unit circle or special right triangles}',
       '\\textcolor{#fbbf24}{\\frac{1}{2}}'
-    ]
+    ],
+    historicalContext: 'Aryabhata, an Indian mathematician in the 5th century, created the first sine tables for astronomical calculations.'
   },
   {
     id: 'int-log-1',
@@ -151,7 +161,8 @@ export const questions: Question[] = [
       '\\textcolor{#3b82f6}{\\log_2}(x) = 5',
       '\\textcolor{#3b82f6}{2}^5 = x',
       'x = \\textcolor{#10b981}{32}'
-    ]
+    ],
+    historicalContext: 'Invented by John Napier in 1614 to drastically simplify complex navigational and astronomical calculations.'
   },
   {
     id: 'int-geometry-1',
@@ -166,7 +177,8 @@ export const questions: Question[] = [
       'c = \\sqrt{\\textcolor{#ec4899}{36} + \\textcolor{#3b82f6}{64}}',
       'c = \\sqrt{\\textcolor{#10b981}{100}}',
       'c = \\textcolor{#fbbf24}{10}'
-    ]
+    ],
+    historicalContext: 'Credited to Pythagoras (570 BC), but used thousands of years earlier by builders to ensure perfect right angles.'
   },
   {
     id: 'int-series-1',
@@ -181,14 +193,15 @@ export const questions: Question[] = [
       'S = \\frac{\\textcolor{#ec4899}{a}}{1 - \\textcolor{#3b82f6}{r}}',
       'S = \\frac{\\textcolor{#ec4899}{1/2}}{1 - \\textcolor{#3b82f6}{1/2}}',
       'S = \\textcolor{#10b981}{1}'
-    ]
+    ],
+    historicalContext: 'Resolves Zeno\'s Paradox of Dichotomy from 450 BC: an infinite number of steps can indeed sum to a finite total.'
   },
 
   // HARD (6 questions)
   {
     id: 'hard-calculus-1',
     topic: 'Calculus',
-    description: 'Find the derivative of f(x) = x^3 \ln(x).',
+    description: 'Find the derivative of f(x) = x^3 \\ln(x).',
     equation: '\\frac{d}{dx} (x^3 \\ln x) = ?',
     difficulty: 'Hard',
     accepts: ['3x^2ln(x)+x^2', 'x^2(3lnx+1)', 'x^2(3ln(x)+1)'],
@@ -198,7 +211,8 @@ export const questions: Question[] = [
       '\\text{Product rule: } (\\textcolor{#ec4899}{u}\\cdot \\textcolor{#3b82f6}{v})\' = \\textcolor{#ec4899}{u\'}\\textcolor{#3b82f6}{v} + \\textcolor{#ec4899}{u}\\textcolor{#3b82f6}{v\'}',
       '\\textcolor{#ec4899}{3x^2} \\textcolor{#3b82f6}{\\ln(x)} + \\textcolor{#ec4899}{x^3} \\textcolor{#3b82f6}{\\left(\\frac{1}{x}\\right)}',
       'x^2 (\\textcolor{#ec4899}{3} \\textcolor{#3b82f6}{\\ln x} + 1)'
-    ]
+    ],
+    historicalContext: 'The Product Rule was discovered by Gottfried Wilhelm Leibniz, publishing the modern notation of calculus in 1684.'
   },
   {
     id: 'hard-calculus-2',
@@ -214,7 +228,8 @@ export const questions: Question[] = [
       '(\\textcolor{#ec4899}{-\\cos(\\pi)}) - (\\textcolor{#ec4899}{-\\cos(0)})',
       '(-(\\textcolor{#3b82f6}{-1})) - (\\textcolor{#3b82f6}{-1})',
       '\\textcolor{#10b981}{2}'
-    ]
+    ],
+    historicalContext: 'Integrals were formalized through the Fundamental Theorem of Calculus by Newton and Leibniz in the late 1600s.'
   },
   {
     id: 'hard-matrix-1',
@@ -229,7 +244,8 @@ export const questions: Question[] = [
       '(\\textcolor{#ec4899}{4} \\times \\textcolor{#ec4899}{3}) - (\\textcolor{#3b82f6}{2} \\times \\textcolor{#3b82f6}{1})',
       '\\textcolor{#ec4899}{12} - \\textcolor{#3b82f6}{2}',
       '\\textcolor{#10b981}{10}'
-    ]
+    ],
+    historicalContext: 'Determinants were first investigated by Seki Takakazu in 1683 to determine if systems of linear equations have unique solutions.'
   },
   {
     id: 'hard-diff-eq-1',
@@ -245,7 +261,8 @@ export const questions: Question[] = [
       '\\int \\textcolor{#3b82f6}{\\frac{1}{y}} dy = \\int k dt',
       '\\textcolor{#ec4899}{\\ln|y|} = kt + C_1',
       'y = \\textcolor{#10b981}{C e^{kt}}'
-    ]
+    ],
+    historicalContext: 'First formulated by Newton in 1671, this equation profoundly describes everything from population growth to radioactive decay.'
   },
   {
     id: 'hard-combinatorics-1',
@@ -260,7 +277,8 @@ export const questions: Question[] = [
       '5 \\times 4 \\times 3 \\times 2 \\times 1',
       '20 \\times 6',
       '120'
-    ]
+    ],
+    historicalContext: 'The factorial symbol (!) was introduced by Christian Kramp in 1808 to simplify the notation of rapidly growing permutations.'
   },
   {
     id: 'hard-probability-1',
@@ -276,7 +294,8 @@ export const questions: Question[] = [
       '\\text{Total outcomes: } 36',
       '\\frac{6}{36}',
       '\\frac{1}{6}'
-    ]
+    ],
+    historicalContext: 'Probability theory was born in 1654 when Blaise Pascal and Pierre de Fermat analyzed a gambling dispute over interrupted dice games.'
   },
 
   // ADVANCED (6 questions)
@@ -294,7 +313,8 @@ export const questions: Question[] = [
       '(\\cos(\\pi) + i\\sin(\\pi)) + 1',
       '(-1 + 0) + 1',
       '0'
-    ]
+    ],
+    historicalContext: 'Published by Euler in 1748. Often called "the most beautiful equation in mathematics," linking 0, 1, e, i, and π.'
   },
   {
     id: 'adv-modular-forms',
@@ -309,7 +329,8 @@ export const questions: Question[] = [
       '\\text{Ramanujan Delta Function } \\Delta(z) \\text{ is a cusp form of weight 12.}',
       'S_{12} \\text{ is spanned solely by } \\Delta',
       '1'
-    ]
+    ],
+    historicalContext: 'Pioneered by Srinivasa Ramanujan in 1916. Modular forms were later the key to proving Fermat\'s Last Theorem in 1994.'
   },
   {
     id: 'adv-calculus-gaussian',
@@ -325,7 +346,8 @@ export const questions: Question[] = [
       '\\text{Polar coord: } I^2 = \\int_{0}^{2\\pi} \\int_{0}^{\\infty} e^{-r^2} r dr d\\theta',
       'I^2 = 2\\pi \\left[ -\\frac{1}{2} e^{-r^2} \\right]_0^\\infty',
       'I^2 = \\pi \\implies I = \\sqrt{\\pi}'
-    ]
+    ],
+    historicalContext: 'Discovered by Abraham de Moivre in 1733, later named after Gauss. Foundational for quantum mechanics and probability.'
   },
   {
     id: 'adv-topology-1',
@@ -341,7 +363,8 @@ export const questions: Question[] = [
       '\\text{Consider a tetrahedron (homeomorphic to a sphere)}',
       '4 - 6 + 4',
       '2'
-    ]
+    ],
+    historicalContext: 'Euler\'s Polyhedral Formula (1758) gave birth to Topology, showing properties remain unchanged despite continuous deformation.'
   },
   {
     id: 'adv-number-theory',
@@ -355,7 +378,8 @@ export const questions: Question[] = [
       '\\sum_{n=1}^{\\infty} \\frac{1}{n^2}',
       '\\text{Basel Problem, solved by Euler}',
       '\\frac{\\pi^2}{6}'
-    ]
+    ],
+    historicalContext: 'The famous "Basel Problem" baffled mathematicians for 90 years until 28-year-old Leonhard Euler solved it in 1734.'
   },
   {
     id: 'adv-group-theory',
@@ -371,7 +395,8 @@ export const questions: Question[] = [
       '4!',
       '4 \\times 3 \\times 2 \\times 1',
       '24'
-    ]
+    ],
+    historicalContext: 'Group theory originated with Évariste Galois in 1832, who used it to prove there is no general formula for fifth-degree polynomials.'
   }
 ];
 
