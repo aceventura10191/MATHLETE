@@ -113,19 +113,19 @@ export default function TextualSolverCanvas({ isVisible, question }: TextualSolv
         {intermediateSteps.map((step, idx) => (
           <div 
             key={idx} 
-            className="solver-step text-2xl sm:text-3xl lg:text-4xl font-serif text-white tracking-widest text-center"
+            className="solver-step text-2xl sm:text-3xl lg:text-4xl font-serif text-white tracking-widest text-center max-w-full overflow-x-auto no-scrollbar pb-2"
             dangerouslySetInnerHTML={{ __html: katex.renderToString(step, { throwOnError: false, displayMode: true }) }}
           />
         ))}
 
         {/* Final Step Container with morphing ? */}
-        <div className="relative flex items-center justify-center mt-6 w-full h-24">
+        <div className="relative flex items-center justify-center mt-6 w-full h-24 max-w-full overflow-x-auto no-scrollbar">
           <span 
             className="final-question-mark absolute text-neutral-500 text-4xl sm:text-5xl font-serif"
             dangerouslySetInnerHTML={{ __html: katex.renderToString("?", { throwOnError: false, displayMode: true }) }}
           />
           <span 
-            className="final-answer absolute text-blue-400 font-bold text-4xl sm:text-5xl lg:text-6xl drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] final-answer-glow font-serif"
+            className="final-answer absolute text-blue-400 font-bold text-4xl sm:text-5xl lg:text-6xl drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] final-answer-glow font-serif whitespace-nowrap"
             dangerouslySetInnerHTML={{ __html: katex.renderToString(finalStep, { throwOnError: false, displayMode: true }) }}
           />
         </div>

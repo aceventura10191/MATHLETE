@@ -103,7 +103,7 @@ export const lessons: Lesson[] = [
       animationType: 'step-by-step',
       steps: [
         'x^2 + \\textcolor{#ec4899}{5x} + \\textcolor{#3b82f6}{6} = 0',
-        '\\text{Find numbers that multiply to 6 and add to 5}',
+        '\\text{Product: } \\textcolor{#3b82f6}{6}, \\; \\text{Sum: } \\textcolor{#ec4899}{5}',
         '(x + \\textcolor{#ec4899}{2})(x + \\textcolor{#3b82f6}{3}) = 0',
         'x = \\textcolor{#10b981}{-2} \\quad \\text{or} \\quad x = \\textcolor{#10b981}{-3}'
       ],
