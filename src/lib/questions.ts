@@ -411,6 +411,46 @@ export const questions: Question[] = [
       '24'
     ],
     historicalContext: 'Group theory originated with Évariste Galois in 1832, who used it to prove there is no general formula for fifth-degree polynomials.'
+  },
+  {
+    id: 'adv-product-rule-1',
+    topic: 'Calculus',
+    description: 'Find the derivative of f(x) = x^x.',
+    equation: '\\frac{d}{dx} (x^x) = ?',
+    difficulty: 'Advanced',
+    accepts: ['x^x(ln x + 1)', 'x^x(ln(x)+1)', 'x^x(1+ln x)', 'x^x(1+ln(x))', 'x^xln(x)+x^x'],
+    animationType: 'step-by-step',
+    historicalContext: 'Requires logarithmic differentiation: applying ln to both sides before using the product rule.'
+  },
+  {
+    id: 'adv-determinant-1',
+    topic: 'Linear Algebra',
+    description: 'Find the determinant of the 2x2 matrix.',
+    equation: '\\det \\begin{pmatrix} \\sin(x) & \\cos(x) \\\\ -\\cos(x) & \\sin(x) \\end{pmatrix} = ?',
+    difficulty: 'Advanced',
+    accepts: ['1', 'one'],
+    animationType: 'step-by-step',
+    historicalContext: 'This matrix represents a pure rotation in 2D space. Rotations preserve area, hence their determinant is exactly 1.'
+  },
+  {
+    id: 'adv-geometric-series-1',
+    topic: 'Series',
+    description: 'Evaluate the infinite sum.',
+    equation: '\\sum_{n=1}^{\\infty} \\frac{2^n + 3^n}{6^n} = ?',
+    difficulty: 'Advanced',
+    accepts: ['3/2', '1.5', '1 1/2'],
+    animationType: 'step-by-step',
+    historicalContext: 'Can be split into two separate geometric series: (2/6)^n and (3/6)^n.'
+  },
+  {
+    id: 'adv-quadratics-1',
+    topic: 'Quadratics',
+    description: 'Find any real root for x.',
+    equation: 'x^4 - 5x^2 + 4 = 0',
+    difficulty: 'Advanced',
+    accepts: ['1', '-1', '2', '-2', 'x=1', 'x=-1', 'x=2', 'x=-2'],
+    animationType: 'step-by-step',
+    historicalContext: 'This is a biquadratic equation. It can be factored by treating x² as a single variable.'
   }
 ];
 

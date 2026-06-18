@@ -41,7 +41,7 @@ export const lessons: Lesson[] = [
         'x (\\textcolor{#ec4899}{2} \\textcolor{#3b82f6}{\\sin x} + \\textcolor{#ec4899}{x} \\textcolor{#3b82f6}{\\cos x})'
       ],
     },
-    challengeQuestion: getQuestion('hard-calculus-1')
+    challengeQuestion: getQuestion('adv-product-rule-1')
   },
   {
     id: 'lesson-determinant',
@@ -63,7 +63,7 @@ export const lessons: Lesson[] = [
         '\\textcolor{#10b981}{14}'
       ],
     },
-    challengeQuestion: getQuestion('hard-matrix-1')
+    challengeQuestion: getQuestion('adv-determinant-1')
   },
   {
     id: 'lesson-geometric-series',
@@ -86,7 +86,7 @@ export const lessons: Lesson[] = [
         'S = \\textcolor{#10b981}{\\frac{1}{2}}'
       ],
     },
-    challengeQuestion: getQuestion('int-series-1')
+    challengeQuestion: getQuestion('adv-geometric-series-1')
   },
   {
     id: 'lesson-quadratics',
@@ -108,7 +108,7 @@ export const lessons: Lesson[] = [
         'x = \\textcolor{#10b981}{-2} \\quad \\text{or} \\quad x = \\textcolor{#10b981}{-3}'
       ],
     },
-    challengeQuestion: getQuestion('int-algebra-1')
+    challengeQuestion: getQuestion('adv-quadratics-1')
   }
 ];
 
