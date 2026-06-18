@@ -1,0 +1,7 @@
+export type GameState = 'NOT_STARTED' | 'ANSWER_SUBMITTED' | 'SHOWING_ANIMATION';
+
+export const GameStates: Record<string, GameState> = {
+  NOT_STARTED: 'NOT_STARTED',
+  ANSWER_SUBMITTED: 'ANSWER_SUBMITTED',
+  SHOWING_ANIMATION: 'SHOWING_ANIMATION',
+};
