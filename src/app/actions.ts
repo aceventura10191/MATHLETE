@@ -1,6 +1,27 @@
 'use server';
 
 import { questions, Question, ClientQuestion } from '@/lib/questions';
+import { lessons, Lesson, ClientLesson } from '@/lib/lessons';
+
+export async function getRandomClientLesson(): Promise<ClientLesson> {
+  const l = lessons[Math.floor(Math.random() * lessons.length)];
+  
+  return {
+    id: l.id,
+    topic: l.topic,
+    title: l.title,
+    conceptText: l.conceptText,
+    exampleQuestion: l.exampleQuestion,
+    challengeQuestion: {
+      id: l.challengeQuestion.id,
+      topic: l.challengeQuestion.topic,
+      description: l.challengeQuestion.description,
+      equation: l.challengeQuestion.equation,
+      difficulty: l.challengeQuestion.difficulty,
+      animationType: l.challengeQuestion.animationType,
+    }
+  };
+}
 
 export async function getRandomClientQuestion(): Promise<ClientQuestion> {
   const q = questions[Math.floor(Math.random() * questions.length)];

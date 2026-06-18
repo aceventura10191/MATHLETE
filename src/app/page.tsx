@@ -5,13 +5,15 @@ import MathCanvas from '@/components/MathCanvas';
 import DailyQuestion from '@/components/DailyQuestion';
 import StreakCounter from '@/components/StreakCounter';
 import { GameState, GameStates } from '@/lib/gameState';
-import { Question, ClientQuestion } from '@/lib/questions';
-import { getRandomClientQuestion, validateAnswer } from '@/app/actions';
+import { Question } from '@/lib/questions';
+import { ClientLesson } from '@/lib/lessons';
+import { getRandomClientLesson, validateAnswer } from '@/app/actions';
 
 export default function Home() {
-  const [gameState, setGameState] = useState<GameState>(GameStates.NOT_STARTED);
+  const [gameState, setGameState] = useState<GameState>(GameStates.LESSON_CONCEPT);
   const [streak, setStreak] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState<ClientQuestion | Question | null>(null);
+  const [currentLesson, setCurrentLesson] = useState<ClientLesson | null>(null);
+  const [fullChallengeQuestion, setFullChallengeQuestion] = useState<Question | null>(null);
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,23 +21,32 @@ export default function Home() {
   const [replayCount, setReplayCount] = useState(0);
 
   useEffect(() => {
-    async function loadQuestion() {
+    async function loadLesson() {
       setIsLoading(true);
-      const q = await getRandomClientQuestion();
-      setCurrentQuestion(q);
+      const l = await getRandomClientLesson();
+      setCurrentLesson(l);
+      setGameState(GameStates.LESSON_CONCEPT);
       setIsLoading(false);
     }
-    loadQuestion();
+    loadLesson();
   }, []);
 
+  const handleShowExample = () => {
+    setGameState(GameStates.LESSON_EXAMPLE);
+  };
+
+  const handleTakeChallenge = () => {
+    setGameState(GameStates.CHALLENGE_INPUT);
+  };
+
   const handleAnswerSubmit = async (answer: string) => {
-    if (!currentQuestion) return;
+    if (!currentLesson) return;
 
     // Securely validate the answer on the server
-    const { correct, feedback: serverFeedback, fullQuestion } = await validateAnswer(currentQuestion.id, answer);
+    const { correct, feedback: serverFeedback, fullQuestion } = await validateAnswer(currentLesson.challengeQuestion.id, answer);
 
     if (fullQuestion) {
-      setCurrentQuestion(fullQuestion);
+      setFullChallengeQuestion(fullQuestion);
     }
 
     setWasCorrect(correct);
@@ -43,9 +54,9 @@ export default function Home() {
     if (correct) setStreak(prev => prev + 1);
     else setStreak(0);
     
-    setGameState(GameStates.ANSWER_SUBMITTED);
+    setGameState(GameStates.CHALLENGE_SUBMITTED);
     setTimeout(() => {
-      setGameState(GameStates.SHOWING_ANIMATION);
+      setGameState(GameStates.CHALLENGE_ANIMATION);
     }, 500);
   };
 
@@ -53,14 +64,15 @@ export default function Home() {
     setReplayCount(prev => prev + 1);
   };
 
-  const handleNextQuestion = async () => {
-    setGameState(GameStates.NOT_STARTED);
+  const handleNextLesson = async () => {
+    setGameState(GameStates.LESSON_CONCEPT);
     setWasCorrect(null);
     setFeedback(null);
+    setFullChallengeQuestion(null);
     setIsLoading(true);
-    const q = await getRandomClientQuestion();
+    const l = await getRandomClientLesson();
     setTimeout(() => {
-      setCurrentQuestion(q);
+      setCurrentLesson(l);
       setIsLoading(false);
     }, 300); // Wait for fade out
   };
@@ -83,7 +95,7 @@ export default function Home() {
       <StreakCounter streak={streak} />
       
       {/* Banner for correct/incorrect feedback overlay */}
-      <div className={`fixed top-4 md:top-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 transform ${gameState === GameStates.SHOWING_ANIMATION || gameState === GameStates.ANSWER_SUBMITTED ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-20 opacity-0 scale-90 pointer-events-none'}`}>
+      <div className={`fixed top-4 md:top-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 transform ${gameState === GameStates.CHALLENGE_ANIMATION || gameState === GameStates.CHALLENGE_SUBMITTED ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-20 opacity-0 scale-90 pointer-events-none'}`}>
         {wasCorrect !== null && (
           <div className={`px-8 py-4 rounded-full backdrop-blur-xl border font-bold tracking-widest text-sm shadow-[0_0_40px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center gap-4 ${wasCorrect ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'bg-rose-500/20 border-rose-400/50 text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.3)]'}`}>
             <span className="uppercase">{wasCorrect ? 'Correct!' : (feedback ? 'Close!' : 'Incorrect.')}</span>
@@ -95,7 +107,7 @@ export default function Home() {
             )}
             
             {/* Control Buttons (Replay / Next) */}
-            {gameState === GameStates.SHOWING_ANIMATION && (
+            {gameState === GameStates.CHALLENGE_ANIMATION && (
               <div className="flex gap-2 ml-4 pl-4 border-l border-[inherit]">
                 <button 
                   onClick={handleReplay}
@@ -105,9 +117,9 @@ export default function Home() {
                   Replay
                 </button>
                 <button 
-                  onClick={handleNextQuestion}
+                  onClick={handleNextLesson}
                   className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
-                  title="Next Question"
+                  title="Next Lesson"
                 >
                   Next
                 </button>
@@ -118,29 +130,84 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 w-full max-w-4xl grid place-items-center flex-1 mt-4 mb-8">
-        {/* We use grid overlapping to stack the components while maintaining intrinsic height */}
+        
+        {/* LOADING LAYER */}
         <div 
           className={`col-start-1 row-start-1 w-full flex items-center justify-center transition-all duration-700 ease-in-out ${
-            gameState === GameStates.SHOWING_ANIMATION || gameState === GameStates.ANSWER_SUBMITTED ? 'opacity-0 scale-90 pointer-events-none blur-md' : 'opacity-100 scale-100 blur-0'
+            isLoading ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 pointer-events-none blur-md'
           }`}
         >
-          {isLoading ? (
+          {isLoading && (
             <div className="w-full max-w-xl mx-auto p-14 bg-neutral-950/80 backdrop-blur-3xl border border-neutral-800/80 rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center min-h-[400px]">
                <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-4" />
-               <p className="text-neutral-500 font-mono text-sm tracking-widest uppercase animate-pulse">Initializing Secure Context...</p>
+               <p className="text-neutral-500 font-mono text-sm tracking-widest uppercase animate-pulse">Loading Lesson...</p>
             </div>
-          ) : (
-            <DailyQuestion question={currentQuestion} onSubmit={handleAnswerSubmit} />
           )}
         </div>
 
+        {/* CONCEPT LAYER */}
         <div 
-          className={`col-start-1 row-start-1 w-full flex items-center justify-center transition-all duration-1000 ease-out delay-300 ${
-            gameState === GameStates.SHOWING_ANIMATION ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 pointer-events-none blur-md'
+          className={`col-start-1 row-start-1 w-full flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${
+            gameState === GameStates.LESSON_CONCEPT && !isLoading ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 pointer-events-none blur-md'
           }`}
         >
-          {gameState === GameStates.SHOWING_ANIMATION && currentQuestion && <MathCanvas key={replayCount} isVisible={true} question={currentQuestion as Question} />}
+          {gameState === GameStates.LESSON_CONCEPT && currentLesson && !isLoading && (
+            <div className="w-full max-w-2xl mx-auto p-12 bg-neutral-950/80 backdrop-blur-3xl border border-neutral-800/80 rounded-[3rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center text-center">
+              <span className="text-blue-400 font-mono text-xs tracking-widest uppercase mb-4">{currentLesson.topic}</span>
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">{currentLesson.title}</h2>
+              <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-10 font-serif">{currentLesson.conceptText}</p>
+              <button 
+                onClick={handleShowExample}
+                className="px-8 py-4 bg-white text-black font-bold tracking-widest uppercase text-sm rounded-full hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
+              >
+                Show Example
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* EXAMPLE LAYER */}
+        <div 
+          className={`col-start-1 row-start-1 w-full flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${
+            gameState === GameStates.LESSON_EXAMPLE ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 pointer-events-none blur-md'
+          }`}
+        >
+          {gameState === GameStates.LESSON_EXAMPLE && currentLesson && (
+            <div className="flex flex-col items-center w-full">
+              <MathCanvas key={`ex-${currentLesson.id}`} isVisible={true} question={currentLesson.exampleQuestion as Question} />
+              <button 
+                onClick={handleTakeChallenge}
+                className="mt-8 px-8 py-4 bg-blue-500 text-white font-bold tracking-widest uppercase text-sm rounded-full hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(59,130,246,0.4)]"
+              >
+                Take Challenge
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* CHALLENGE INPUT LAYER */}
+        <div 
+          className={`col-start-1 row-start-1 w-full flex items-center justify-center transition-all duration-700 ease-in-out ${
+            gameState === GameStates.CHALLENGE_INPUT || gameState === GameStates.CHALLENGE_SUBMITTED ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-90 pointer-events-none blur-md'
+          }`}
+        >
+          {/* We only render this if it's the active step, to prevent double rendering DailyQuestion issues */}
+          {(gameState === GameStates.CHALLENGE_INPUT || gameState === GameStates.CHALLENGE_SUBMITTED) && currentLesson && (
+             <div className={`transition-all duration-700 ${gameState === GameStates.CHALLENGE_SUBMITTED ? 'opacity-0 scale-90 blur-md pointer-events-none' : ''}`}>
+               <DailyQuestion question={currentLesson.challengeQuestion} onSubmit={handleAnswerSubmit} />
+             </div>
+          )}
+        </div>
+
+        {/* CHALLENGE ANIMATION LAYER */}
+        <div 
+          className={`col-start-1 row-start-1 w-full flex items-center justify-center transition-all duration-1000 ease-out delay-300 ${
+            gameState === GameStates.CHALLENGE_ANIMATION ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 pointer-events-none blur-md'
+          }`}
+        >
+          {gameState === GameStates.CHALLENGE_ANIMATION && fullChallengeQuestion && <MathCanvas key={`chal-${replayCount}`} isVisible={true} question={fullChallengeQuestion} />}
+        </div>
+
       </div>
     </main>
   );
