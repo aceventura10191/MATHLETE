@@ -1,7 +1,7 @@
 'use server';
 
 import { questions, Question, ClientQuestion } from '@/lib/questions';
-import { lessons, Lesson, ClientLesson } from '@/lib/lessons';
+import { lessons, ClientLesson } from '@/lib/lessons';
 
 export async function getRandomClientLesson(): Promise<ClientLesson> {
   const l = lessons[Math.floor(Math.random() * lessons.length)];
